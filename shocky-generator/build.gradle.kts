@@ -8,12 +8,13 @@ dependencies {
     testImplementation(kotlin("test"))
     implementation(libs.markdown)
     implementation(libs.ktor.server.core)
-    implementation(libs.ktor.server.netty)
+    implementation(libs.ktor.server.cio)
+    implementation(libs.ktor.server.websockets)
     implementation(libs.ktor.server.html.builder)
     implementation(libs.kaml)
     implementation(libs.kotlinx.serialization.json)
     implementation("ch.qos.logback:logback-classic:1.5.6")
-
+    implementation("io.methvin:directory-watcher:0.18.0")
     api(libs.kotlinx.datetime)
     api(libs.kotlinx.html)
 }
@@ -22,19 +23,8 @@ kotlin {
     jvmToolchain(17)
 }
 
-publishing {
-    repositories {
-        maven {
-            val repo = "https://repo.mineinabyss.com/"
-            val isSnapshot = System.getenv("IS_SNAPSHOT") == "true"
-            val url = if (isSnapshot) repo + "snapshots" else repo + "releases"
-            setUrl(url)
-            credentials {
-                username = project.findProperty("mineinabyssMavenUsername") as String?
-                password = project.findProperty("mineinabyssMavenPassword") as String?
-            }
-        }
-    }
+java {
+    withSourcesJar()
 }
 
 publishing {

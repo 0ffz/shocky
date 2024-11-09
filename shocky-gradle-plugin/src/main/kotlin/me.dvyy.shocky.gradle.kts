@@ -60,10 +60,6 @@ tasks {
 
         commandLine("echo", "Tailwind CSS downloaded to $tailwindDestination")
     }
-//    register<Exec>("runTailwind") {
-//        dependsOn("downloadTailwindCSS")
-//        commandLine(tailwindDestination.toString(), "-o", "out/assets/tailwind/styles.css", "--minify")
-//    }
 }
 
 tasks {
@@ -76,6 +72,7 @@ tasks {
 
     register<JavaExec>("serve") {
         classpath = sourceSets["main"].runtimeClasspath
+        jvmArgs("-Dio.ktor.development=true")
         environment("DEVELOPMENT", "true")
         args = listOf("serve")
         mainClass.set("SiteKt")

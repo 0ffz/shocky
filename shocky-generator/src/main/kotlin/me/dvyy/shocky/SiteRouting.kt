@@ -61,7 +61,6 @@ class SiteRouting(
 
     @PublishedApi
     internal fun Page.defaultTemplate() = routingRoot.templates[template ?: "default"]?.invoke(this)
-
 }
 
 class Document(val path: Path, val page: Page)

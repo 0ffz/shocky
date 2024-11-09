@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.util.prefixIfNot
-
 plugins {
     `version-catalog`
     `maven-publish`
