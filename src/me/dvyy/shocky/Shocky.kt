@@ -20,6 +20,7 @@ import kotlinx.html.dom.append
 import kotlinx.html.dom.write
 import kotlinx.html.script
 import me.dvyy.shocky.dev.autoReloadScript
+import me.dvyy.shocky.dev.installTailwindIfNecessary
 import java.nio.file.Path
 import kotlin.io.path.*
 import kotlin.time.Duration.Companion.milliseconds
@@ -33,9 +34,10 @@ private fun runCommand(vararg args: String) {
 
 class Shocky(
     val dest: Path,
-    val route: () -> SiteRouting,
+    val route: SiteRouting,
     val assets: List<Path> = listOf(),
     val useTailwind: Boolean = true,
+    val tailwindVersion: String = "v3.4.14",
     val port: Int = 8080,
     val watch: List<Path> = listOf(),
 ) {
@@ -50,7 +52,9 @@ class Shocky(
 
         if (useTailwind) {
             launch {
-                runCommand("./build/tailwindcss/tailwindcss", "-o", "out/assets/tailwind/styles.css", "--minify")
+                val tailwindPath = dest / "../build/tailwind"
+                installTailwindIfNecessary(tailwindPath, tailwindVersion)
+                runCommand(tailwindPath.pathString, "-o", "out/assets/tailwind/styles.css", "--minify")
             }
         }
         launch {
@@ -62,7 +66,6 @@ class Shocky(
     }
 
     suspend fun generateDocuments(devMode: Boolean) = withContext(Dispatchers.IO){
-        val route = route()
         route.assets.forEach {
             val dest = dest / it.relativeTo(route.route)
             dest.createParentDirectories()
