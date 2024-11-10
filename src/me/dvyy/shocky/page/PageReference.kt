@@ -27,7 +27,7 @@ data class PageReference(
 
     private fun read(frontMatter: String, content: String): Page {
         val frontMatterNode = yaml.parseToYamlNode(frontMatter.ifEmpty { "{}" }).yamlMap
-        val common = yaml.decodeFromYamlNode(CommonFrontMatter.serializer(), frontMatterNode)
+        val common = yaml.decodeFromYamlNode(serializer<CommonFrontMatter>(), frontMatterNode)
 
         return Page(
             yaml = yaml,

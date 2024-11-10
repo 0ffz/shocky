@@ -1,0 +1,34 @@
+product:
+  type: lib
+  platforms: [ jvm ]
+repositories:
+  - url: "https://repo.mineinabyss.com/releases"
+    id: "mineinabyss"
+    publish: true
+    credentials:
+      file: "local.properties"
+      usernameKey: "mineinabyssUsername"
+      passwordKey: "mineinabyssPassword"
+dependencies:
+  - org.jetbrains.kotlinx:kotlinx-html-jvm:0.11.0: exported
+  - org.jetbrains.kotlinx:kotlinx-datetime:0.6.0: exported
+  - org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1
+  - org.jetbrains.kotlinx:kotlinx-coroutines:0.19.2
+  - com.charleskorn.kaml:kaml:0.61.0
+  - io.ktor:ktor-server-core:3.0.0
+  - io.ktor:ktor-server-cio:3.0.0
+  - io.ktor:ktor-server-websockets:3.0.0
+  - io.ktor:ktor-server-html-builder:3.0.0
+  - org.jetbrains:markdown:0.7.3
+  - ch.qos.logback:logback-classic:1.5.6
+  - io.methvin:directory-watcher:0.18.0
+settings:
+  publishing:
+    group: "me.dvyy"
+    name: "shocky"
+    version: "0.0.1"
+  jvm:
+    release: 21
+  kotlin:
+    serialization:
+      format: json

@@ -6,7 +6,6 @@ import me.dvyy.shocky.page.PageReference.Companion.yaml
 import me.dvyy.shocky.page.Pages
 import java.nio.file.Path
 import kotlin.io.path.*
-import kotlin.reflect.KFunction
 
 class SiteRouting(
     rootOrNull: SiteRouting?,

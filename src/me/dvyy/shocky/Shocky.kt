@@ -9,10 +9,11 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
-import io.methvin.watcher.DirectoryChangeEvent
 import io.methvin.watcher.DirectoryWatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.html.dom.append
@@ -60,35 +61,36 @@ class Shocky(
         }
     }
 
-    suspend fun generateDocuments(devMode: Boolean) {
+    suspend fun generateDocuments(devMode: Boolean) = withContext(Dispatchers.IO){
         val route = route()
         route.assets.forEach {
             val dest = dest / it.relativeTo(route.route)
             dest.createParentDirectories()
             it.copyTo(dest, overwrite = true)
         }
-        route.documents.forEach { document ->
-            val path = dest / document.path.relativeTo(route.route)
-            path.createParentDirectories().also { if (it.notExists()) it.createFile() }
-                .writer()
-                .use { writer ->
-                    document.page.html
-                        ?.apply {
-                            if (devMode) getElementsByTagName("head").item(0)?.append {
-                                script(src = "/assets/scripts/autoreload.js") {
-                                    defer = true
+        route.documents.map { document ->
+            launch {
+                val path = dest / document.path.relativeTo(route.route)
+                path.createParentDirectories().also { if (it.notExists()) it.createFile() }
+                    .writer()
+                    .use { writer ->
+                        document.page.html
+                            ?.apply {
+                                if (devMode) getElementsByTagName("head").item(0)?.append {
+                                    script(src = "/assets/scripts/autoreload.js") {
+                                        defer = true
+                                    }
                                 }
                             }
-                        }
-                        ?.let { writer.write(it, prettyPrint = false) }
-                }
-        }
-        generatorFlow.emit(Unit)
+                            ?.let { writer.write(it, prettyPrint = false) }
+                    }
+            }
+        }.joinAll()
     }
 
     suspend fun run(args: Array<String>) {
         val type = args.getOrNull(0)
-        val devMode = System.getenv("DEVELOPMENT") == "true"
+        val devMode = args.getOrNull(1) == "dev"
         when (type) {
             "build" -> generate(devMode = devMode)
             "serve" -> startServerAndWatch()
@@ -106,12 +108,17 @@ class Shocky(
             CIO,
             port = port,
             host = "localhost",
-            watchPaths = listOf("classes")
+            watchPaths = listOf(
+                "classes",
+                "resources",
+                Path("build/tasks/_personal-site-kotlin_compileJvm").absolutePathString()
+            )
         ) {
             install(WebSockets)
             routing {
                 webSocket("/ping") {
-                    generatorFlow.collectLatest {
+                    generatorFlow.debounce(250.milliseconds).collect {
+                        println("Sending reload")
                         send(Frame.Text("reload"))
                     }
                 }
@@ -124,7 +131,6 @@ class Shocky(
                 staticFiles("/", dest.toFile()) {
                     extensions("html")
                 }
-
             }
             configure(this)
         }.start(wait = true)
@@ -132,36 +138,51 @@ class Shocky(
 
     suspend fun startServerAndWatch(): Unit = withContext(Dispatchers.IO) {
         launch {
-            callbackFlow<DirectoryChangeEvent> {
-                DirectoryWatcher.builder()
-                    .paths(watch)
-                    .listener {
-                        trySend(it)
+            callbackFlow {
+                val watcher = DirectoryWatcher.builder()
+                    .paths(watch + Path("src"))
+                    .listener { event ->
+                        trySend(event)
                     }
                     .build()
-                    .watch()
+
+                watcher.watchAsync()
+
+                awaitClose { watcher.close() }
             }
-                .flowOn(Dispatchers.IO)
                 .filter { !it.path().endsWith("~") }
-                .debounce(100.milliseconds)
+                .debounce(300.milliseconds)
                 .collectLatest { event ->
-                    println("File changed: ${event.path()}, regenerating")
-                    generateDocuments(devMode = true)
+//                    if (watch.map { it.toAbsolutePath() }.any { event.path().startsWith(it) }) {
+//                        println("File changed: ${event.path()}, regenerating")
+//                        generateDocuments(devMode = true)
+//                        return@collectLatest
+//                    }
+//                    if (event.path().startsWith(Path("src").toAbsolutePath())) {
+//                        println("Source file changed: ${event.path()}, rebuilding")
+                    rebuild()
+                    generatorFlow.emit(Unit)
+//                    }
                 }
         }
 
         launch {
+            generate(devMode = true)
             startServer()
         }
+    }
 
-        launch {
-            ProcessBuilder("./gradlew", "-t", "build", "-x", "test", "-w", "--no-daemon").apply {
-                environment()["JAVA_HOME"] = System.getProperty("java.home")
-                environment()["DEVELOPMENT"] = "true"
-                redirectInput(ProcessBuilder.Redirect.INHERIT)
-                redirectOutput(ProcessBuilder.Redirect.INHERIT)
+    val queue = Dispatchers.IO.limitedParallelism(1)
+
+    suspend fun rebuild() = withContext(queue) {
+        println("Rebuilding...")
+        measureTime {
+            ProcessBuilder("./amper", "run", "build", "dev").apply {
+//            environment()["JAVA_HOME"] = System.getProperty("java.home")
+//            redirectInput(ProcessBuilder.Redirect.INHERIT)
+//            redirectOutput(ProcessBuilder.Redirect.INHERIT)
                 redirectError(ProcessBuilder.Redirect.INHERIT)
-            }.start()
-        }
+            }.start().onExit().join()
+        }.let { println("Rebuilt in: $it")}
     }
 }
