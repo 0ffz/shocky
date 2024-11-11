@@ -65,7 +65,7 @@ class Shocky(
         }
     }
 
-    suspend fun generateDocuments(devMode: Boolean) = withContext(Dispatchers.IO){
+    suspend fun generateDocuments(devMode: Boolean) = withContext(Dispatchers.IO) {
         route.assets.forEach {
             val dest = dest / it.relativeTo(route.route)
             dest.createParentDirectories()
@@ -95,11 +95,11 @@ class Shocky(
         val type = args.getOrNull(0)
         val devMode = args.getOrNull(1) == "dev"
         when (type) {
-            "build" -> generate(devMode = devMode)
+            "generate" -> generate(devMode = devMode)
             "serve" -> startServerAndWatch()
 
             else -> {
-                println("Pass a command, build, or serve")
+                println("Pass a command, [generate, serve]")
             }
         }
     }
@@ -111,11 +111,6 @@ class Shocky(
             CIO,
             port = port,
             host = "localhost",
-            watchPaths = listOf(
-                "classes",
-                "resources",
-                Path("build/tasks/_personal-site-kotlin_compileJvm").absolutePathString()
-            )
         ) {
             install(WebSockets)
             routing {
@@ -180,12 +175,12 @@ class Shocky(
     suspend fun rebuild() = withContext(queue) {
         println("Rebuilding...")
         measureTime {
-            ProcessBuilder("./amper", "run", "build", "dev").apply {
+            ProcessBuilder("./amper", "run", "generate", "dev").apply {
 //            environment()["JAVA_HOME"] = System.getProperty("java.home")
 //            redirectInput(ProcessBuilder.Redirect.INHERIT)
 //            redirectOutput(ProcessBuilder.Redirect.INHERIT)
                 redirectError(ProcessBuilder.Redirect.INHERIT)
             }.start().onExit().join()
-        }.let { println("Rebuilt in: $it")}
+        }.let { println("Rebuilt in: $it") }
     }
 }

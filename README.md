@@ -4,74 +4,31 @@ A super simple static site generator written on top of kotlinx.html and standalo
 
 Shocky's goal is to provide a simple way to write individual components and programmatically combine them in templates used by markdown files. It does everything at compile time using the typesafe `kotlinx.html` DSL, `kotlinx.serialization` for parsing page frontmatter, and zero JavaScript required on the client.
 
-Currently WIP, will be setting up publishing to a repository soon.
-
 ## Quickstart
 
-### Setup
+Shocky is designed to be used with [Amper](https://github.com/JetBrains/amper), a simpler alternative to Gradle build scripts (you can still depend on it like normal in Gradle, just call `Shocky` in your main class like below.)
 
-Shocky comes with a gradle plugin and version catalog for simpler setup and running. A template will be available soon, you can look at [0ffz/personal-site](https://github.com/0ffz/personal-site) for an example.
+#### Install Amper for IntelliJ/Fleet and create a new project using it
 
-<details>
+See: https://github.com/JetBrains/amper
 
+#### Configure your `module.yaml`
 
-<summary><b>Manually configure your project...</b></summary>
-
-#### Update your `gradle.properties`
-```kotlin
-shockyVersion=<version>
+```yaml
+product: jvm/app
+repositories:
+  - id: "mineinabyss"
+    url: "https://repo.mineinabyss.com/releases"
+dependencies:
+  - "me.dvyy:shocky:x.y.z"
+settings:
+  kotlin:
+    serialization: json
+  jvm:
+    release: 21
 ```
 
-#### Create a new gradle project, add the following to your `settings.gradle.kts`:
-
-```kotlin
-pluginManagement {
-    repositories {
-        gradlePluginPortal()
-        maven("https://repo.mineinabyss.com/releases")
-    }
-}
-
-dependencyResolutionManagement {
-    val shockyVersion: String by settings
-
-    repositories {
-        maven("https://repo.mineinabyss.com/releases")
-    }
-    versionCatalogs {
-        create("shockyLibs").from("me.dvyy:catalog:$shockyVersion")
-    }
-}
-```
-
-#### Configure your `build.gradle.kts`:
-
-```kotlin
-plugins {
-    alias(shockyLibs.plugins.shocky)
-}
-
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    implementation(shockyLibs.bundles.shocky)
-}
-
-sourceSets.main {
-    kotlin.srcDirs("src")
-    resources.srcDirs("site")
-}
-
-kotlin {
-    jvmToolchain(17)
-}
-```
-
-This will let you write components directly in the `src` directory and place markdown files under `site`, which gradle will watch for changes.
-
-#### Configure your site in `src/Site.kt`
+#### Configure your site in `src/Main.kt`
 
 ```kotlin
 suspend fun main(args: Array<String>) = Shocky(
@@ -80,27 +37,17 @@ suspend fun main(args: Array<String>) = Shocky(
         // Set up routing here...
     },
     assets = listOf(Path("site/assets")),
+    // If enabled, will auto download and run tailwind standalone binary
+    useTailwind = true,
 ).run(args)
-
 ```
 
-</details>
+#### Serve your site
 
-### Running
+The Shocky class above reads args passed to let you run the following commands:
 
-The plugin applied above adds the following gradle tasks:
-
-<details>
-
-<summary>
-<code>npmInstall</code> <code>generate</code> <code>serve</code>
-</summary>
-
-- `gradle npmInstall` - Installs npm dependencies for tailwind
-- `gradle generate` - Generates the site to your output directory
-- `gradle serve` - Starts a local server to preview your site, runs gradle in watch mode to refresh your site on changes (currently requires page reloads in the browser)
-
-</details>
+- `./amper run serve` - Starts server and refreshes page when src or site are changed.
+- `./amper run generate` - Generates site files to the output directory
 
 ### Coding your site
 
@@ -156,5 +103,4 @@ suspend fun main(args: Array<String>) = Shocky(
     },
     assets = listOf(Path("site/assets")),
 ).run(args)
-
 ```

@@ -1,0 +1,23 @@
+name: Publish Packages
+
+on:
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - '**.md'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create local.properties file
+        run: |
+          echo "mineinabyssUsername=${{ secrets.MAVEN_PUBLISH_USERNAME }}" >> local.properties
+          echo "mineinabyssPassword=${{ secrets.MAVEN_PUBLISH_PASSWORD }}" >> local.properties
+
+      - name: Publish
+        run: chmod +x ./amper && ./amper publish mineinabyss
