@@ -67,7 +67,7 @@ data class Page(
                 title = meta.getOrNull("title") ?: "Untitled",
                 desc = meta.getOrNull("desc"),
                 template = meta.getOrNull("template"),
-                url = meta.getOrNull("url") ?: url,
+                url = "/" + (meta.getOrNull("url") ?: url).removePrefix("/"),
             )
         }
 

@@ -42,7 +42,7 @@ class SiteRouting(
     }
 
     fun page(path: String, init: Page.() -> Unit = { defaultTemplate() }) {
-        val ref = Pages.single(route / path, relativeTo = routingRoot.route / url)
+        val ref = Pages.single(route / path, root = routingRoot.route)
         addDocument(Document(ref.outputPath, ref.read().apply(init)))
     }
 

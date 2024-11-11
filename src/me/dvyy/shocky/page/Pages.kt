@@ -11,17 +11,17 @@ object Pages {
         return root
             .walk()
             .filter { it.isRegularFile() && it.extension == "md" }
-            .map { doc -> single(doc, relativeTo = siteRoot) }
+            .map { doc -> single(doc, root = siteRoot) }
             .toList()
     }
 
-    fun single(path: Path, relativeTo: Path): PageReference {
+    fun single(path: Path, root: Path): PageReference {
         val doc = path.normalize()
         val output = outputFor(doc)
-        val relativeUrl = doc.url(relativeTo)
+        val url = doc.url(root)
 
         return PageReference(
-            url = relativeUrl.toString(),
+            url = "/$url",
             inputFile = doc,
             outputPath = output,
         )
@@ -31,8 +31,8 @@ object Pages {
         if (path.nameWithoutExtension == "index") path.parent / "index.html"
         else path.parent / "${path.nameWithoutExtension}.html"
 
-    private fun Path.url(relativeTo: Path): Path =
-        (if (nameWithoutExtension == "index") parent else parent / nameWithoutExtension).relativeTo(relativeTo)
+    private fun Path.url(root: Path): Path =
+        (if (nameWithoutExtension == "index") parent else parent / nameWithoutExtension).relativeTo(root)
 
     fun generate(
         path: Path,
