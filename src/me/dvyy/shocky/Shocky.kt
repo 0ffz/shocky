@@ -84,6 +84,13 @@ class Shocky(
                                         defer = true
                                     }
                                 }
+                                val nodes = getElementsByTagName("img")
+                                for (i in 0 until nodes.length) {
+                                    val href = nodes.item(i).attributes.getNamedItem("src")
+                                    val value = href.nodeValue
+                                    if(!value.startsWith("/") && !value.startsWith("http"))
+                                        href.nodeValue = "/" + (document.path.parent / Path(value)).relativeTo(route.route).pathString
+                                }
                             }
                             ?.let { writer.write(it, prettyPrint = false) }
                     }
