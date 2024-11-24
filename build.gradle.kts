@@ -46,7 +46,7 @@ sourceSets {
 publishing {
     repositories {
         maven {
-            name = "mineinabyss"
+            name = "mineinabyssMaven"
             credentials(PasswordCredentials::class)
             url = uri("https://repo.mineinabyss.com/releases")
         }
