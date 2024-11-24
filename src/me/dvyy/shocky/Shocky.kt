@@ -21,24 +21,21 @@ import kotlinx.html.dom.write
 import kotlinx.html.script
 import me.dvyy.shocky.dev.autoReloadScript
 import me.dvyy.shocky.dev.installTailwindIfNecessary
+import org.slf4j.helpers.NOPLogger
 import java.nio.file.Path
 import kotlin.io.path.*
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.measureTime
 
-private fun runCommand(vararg args: String) {
-    ProcessBuilder(*args).apply {
-        inheritIO()
-    }.start().waitFor()
-}
-
 class Shocky(
     val dest: Path,
-    val route: SiteRouting,
-    val assets: List<Path> = listOf(),
-    val useTailwind: Boolean = true,
-    val tailwindVersion: String = "v3.4.14",
-    val port: Int = 8080,
+    val routing: SiteRouting,
+    val assets: List<Path>,
+    val useTailwind: Boolean,
+    val tailwindVersion: String,
+    val port: Int,
+    val beforeGenerate: () -> Unit,
+    val afterGenerate: () -> Unit,
     val watch: List<Path> = listOf(),
 ) {
     val generatorFlow = MutableSharedFlow<Unit>()
@@ -50,30 +47,32 @@ class Shocky(
             dest.createDirectories()
         }.let { println("Cleared output in: $it") }
 
-        if (useTailwind) {
-            launch {
-                val tailwindPath = dest / "../build/tailwind"
-                installTailwindIfNecessary(tailwindPath, tailwindVersion)
-                runCommand(tailwindPath.pathString, "-o", "out/assets/tailwind/styles.css", "--minify")
-            }
-        }
         launch {
+            beforeGenerate()
             measureTime {
                 assets.forEach { it.copyToRecursively(dest / it.name, followLinks = false, overwrite = true) }
             }.let { println("Copied extra inputs in: $it") }
             println("Generated html files in: ${measureTime { generateDocuments(devMode) }}")
+
+            if (useTailwind) {
+                val tailwindPath = dest / "../build/tailwind"
+                installTailwindIfNecessary(tailwindPath, tailwindVersion)
+                runCommand(tailwindPath.pathString, "-o", "out/assets/tailwind/styles.css", "--minify")
+            }
+
+            afterGenerate()
         }
     }
 
     suspend fun generateDocuments(devMode: Boolean) = withContext(Dispatchers.IO) {
-        route.assets.forEach {
-            val dest = dest / it.relativeTo(route.route)
+        routing.assets.forEach {
+            val dest = dest / it.relativeTo(routing.route)
             dest.createParentDirectories()
             it.copyTo(dest, overwrite = true)
         }
-        route.documents.map { document ->
+        routing.documents.map { document ->
             launch {
-                val path = dest / document.path.relativeTo(route.route)
+                val path = dest / document.path.relativeTo(routing.route)
                 path.createParentDirectories().also { if (it.notExists()) it.createFile() }
                     .writer()
                     .use { writer ->
@@ -89,7 +88,7 @@ class Shocky(
                                     val href = nodes.item(i).attributes.getNamedItem("src")
                                     val value = href.nodeValue
                                     if(!value.startsWith("/") && !value.startsWith("http"))
-                                        href.nodeValue = "/" + (document.path.parent / Path(value)).relativeTo(route.route).pathString
+                                        href.nodeValue = "/" + (document.path.parent / Path(value)).relativeTo(routing.route).pathString
                                 }
                             }
                             ?.let { writer.write(it, prettyPrint = false) }
@@ -122,7 +121,7 @@ class Shocky(
             install(WebSockets)
             routing {
                 webSocket("/ping") {
-                    generatorFlow.debounce(250.milliseconds).collect {
+                    generatorFlow.collectLatest {
                         println("Sending reload")
                         send(Frame.Text("reload"))
                     }
@@ -145,6 +144,7 @@ class Shocky(
         launch {
             callbackFlow {
                 val watcher = DirectoryWatcher.builder()
+                    .logger(NOPLogger.NOP_LOGGER)
                     .paths(watch + Path("src"))
                     .listener { event ->
                         trySend(event)
@@ -158,16 +158,8 @@ class Shocky(
                 .filter { !it.path().endsWith("~") }
                 .debounce(300.milliseconds)
                 .collectLatest { event ->
-//                    if (watch.map { it.toAbsolutePath() }.any { event.path().startsWith(it) }) {
-//                        println("File changed: ${event.path()}, regenerating")
-//                        generateDocuments(devMode = true)
-//                        return@collectLatest
-//                    }
-//                    if (event.path().startsWith(Path("src").toAbsolutePath())) {
-//                        println("Source file changed: ${event.path()}, rebuilding")
                     rebuild()
                     generatorFlow.emit(Unit)
-//                    }
                 }
         }
 
@@ -181,9 +173,11 @@ class Shocky(
 
     suspend fun rebuild() = withContext(queue) {
         println("Rebuilding...")
+        val amperExists = Path("amper").exists()
         measureTime {
-            ProcessBuilder("./amper", "run", "generate", "dev").apply {
-//            environment()["JAVA_HOME"] = System.getProperty("java.home")
+            (if (amperExists) ProcessBuilder("./amper", "run", "generate", "dev")
+            else ProcessBuilder("./gradlew", "run", "--args=generate dev", "--parallel", "--configuration-cache", "--build-cache")).apply {
+            environment()["JAVA_HOME"] = System.getProperty("java.home")
 //            redirectInput(ProcessBuilder.Redirect.INHERIT)
 //            redirectOutput(ProcessBuilder.Redirect.INHERIT)
                 redirectError(ProcessBuilder.Redirect.INHERIT)
