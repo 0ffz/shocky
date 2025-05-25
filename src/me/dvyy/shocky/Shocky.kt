@@ -87,8 +87,9 @@ class Shocky(
                                 for (i in 0 until nodes.length) {
                                     val href = nodes.item(i).attributes.getNamedItem("src")
                                     val value = href.nodeValue
-                                    if(!value.startsWith("/") && !value.startsWith("http"))
-                                        href.nodeValue = "/" + (document.path.parent / Path(value)).relativeTo(routing.route).pathString
+                                    if (!value.startsWith("/") && !value.startsWith("http"))
+                                        href.nodeValue =
+                                            "/" + (document.path.parent / Path(value)).relativeTo(routing.route).pathString
                                 }
                             }
                             ?.let { writer.write(it, prettyPrint = false) }
@@ -113,6 +114,7 @@ class Shocky(
     fun startServer(
         configure: Application.() -> Unit = {},
     ) {
+        println("Starting server")
         embeddedServer(
             CIO,
             port = port,
@@ -121,9 +123,16 @@ class Shocky(
             install(WebSockets)
             routing {
                 webSocket("/ping") {
-                    generatorFlow.collectLatest {
-                        println("Sending reload")
-                        send(Frame.Text("reload"))
+                    val job = launch {
+                        generatorFlow.collectLatest {
+                            println("Sending reload")
+                            send(Frame.Text("reload"))
+                        }
+                    }
+                    try {
+                        incoming.receiveAsFlow().collect()
+                    } finally {
+                        job.cancel()
                     }
                 }
                 get("/assets/scripts/autoreload.js") {
@@ -176,8 +185,15 @@ class Shocky(
         val amperExists = Path("amper").exists()
         measureTime {
             (if (amperExists) ProcessBuilder("./amper", "run", "generate", "dev")
-            else ProcessBuilder("./gradlew", "run", "--args=generate dev", "--parallel", "--configuration-cache", "--build-cache")).apply {
-            environment()["JAVA_HOME"] = System.getProperty("java.home")
+            else ProcessBuilder(
+                "./gradlew",
+                "run",
+                "--args=generate dev",
+                "--parallel",
+                "--configuration-cache",
+                "--build-cache"
+            )).apply {
+                environment()["JAVA_HOME"] = System.getProperty("java.home")
 //            redirectInput(ProcessBuilder.Redirect.INHERIT)
 //            redirectOutput(ProcessBuilder.Redirect.INHERIT)
                 redirectError(ProcessBuilder.Redirect.INHERIT)
