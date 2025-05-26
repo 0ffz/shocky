@@ -12,6 +12,8 @@ fun installTailwindIfNecessary(
 ) {
     if(dest.exists()) return
 
+    println("Installing TailwindCSS $tailwindVersion...")
+
     val tailwindBaseUrl = "https://github.com/tailwindlabs/tailwindcss/releases/download/$tailwindVersion"
     val osName = System.getProperty("os.name").lowercase()
     val arch = System.getProperty("os.arch").lowercase()

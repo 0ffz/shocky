@@ -31,8 +31,7 @@ class Shocky(
     val dest: Path,
     val routing: SiteRouting,
     val assets: List<Path>,
-    val useTailwind: Boolean,
-    val tailwindVersion: String,
+    val tailwindOptions: TailwindOptions,
     val port: Int,
     val beforeGenerate: () -> Unit,
     val afterGenerate: () -> Unit,
@@ -54,10 +53,23 @@ class Shocky(
             }.let { println("Copied extra inputs in: $it") }
             println("Generated html files in: ${measureTime { generateDocuments(devMode) }}")
 
-            if (useTailwind) {
-                val tailwindPath = dest / "../build/tailwind"
-                installTailwindIfNecessary(tailwindPath, tailwindVersion)
-                runCommand(tailwindPath.pathString, "-o", "out/assets/tailwind/styles.css", "--minify")
+            if (tailwindOptions.enabled) {
+                val tailwindPath = dest / "../build/tailwind-${tailwindOptions.version}"
+                installTailwindIfNecessary(tailwindPath, tailwindOptions.version)
+                runCommand(
+                    buildList {
+                        add(tailwindPath.pathString)
+                        val input = tailwindOptions.inputCss?.pathString
+                        if (input != null) addAll(listOf("-i", input))
+                        addAll(
+                            listOf(
+                                "-o",
+                                "out/assets/tailwind/styles.css",
+                                "--minify"
+                            )
+                        )
+                    }
+                )
             }
 
             afterGenerate()

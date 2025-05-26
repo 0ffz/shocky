@@ -8,8 +8,6 @@ data class ShockyConfiguration(
     var dest: Path = Path("out"),
     var siteRoot: Path = Path("site"),
     var assets: MutableList<Path> = mutableListOf(),
-    var useTailwind: Boolean = true,
-    var tailwindVersion: String = "v3.4.14",
     var port: Int = 8080,
     var watch: MutableList<Path> = mutableListOf(),
     var currentDir: Path = Path("."),
@@ -17,6 +15,12 @@ data class ShockyConfiguration(
     private var beforeGenerate: () -> Unit = {},
     private var afterGenerate: () -> Unit = {},
 ) {
+    private val tailwindOptions = TailwindOptionsBuilder()
+
+    fun tailwind(block: TailwindOptionsBuilder.() -> Unit) {
+        tailwindOptions.block()
+    }
+
     fun dest(path: String) {
         dest = Path(path)
     }
@@ -49,8 +53,7 @@ data class ShockyConfiguration(
         dest = dest,
         routing = routing,
         assets = assets,
-        useTailwind = useTailwind,
-        tailwindVersion = tailwindVersion,
+        tailwindOptions = tailwindOptions.build(),
         port = port,
         beforeGenerate = beforeGenerate,
         afterGenerate = afterGenerate,

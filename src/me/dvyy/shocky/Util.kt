@@ -1,7 +1,7 @@
 package me.dvyy.shocky
 
-internal fun runCommand(vararg args: String) {
-    ProcessBuilder(*args).apply {
-//        inheritIO()
+internal fun runCommand(args: List<String>) {
+    ProcessBuilder(args).apply {
+        redirectError(ProcessBuilder.Redirect.INHERIT)
     }.start().waitFor()
 }
