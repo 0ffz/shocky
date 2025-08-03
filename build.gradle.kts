@@ -4,8 +4,6 @@ plugins {
     `maven-publish`
 }
 
-group = "me.dvyy"
-version = "0.3"
 
 repositories {
     mavenCentral()
@@ -50,8 +48,11 @@ publishing {
     repositories {
         maven {
             name = "mineinabyssMaven"
+            val repo = "https://repo.mineinabyss.com/"
+            val isSnapshot = System.getenv("IS_SNAPSHOT") == "true"
+            val url = if (isSnapshot) repo + "snapshots" else repo + "releases"
+            setUrl(url)
             credentials(PasswordCredentials::class)
-            url = uri("https://repo.mineinabyss.com/releases")
         }
     }
     publications {
