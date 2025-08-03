@@ -20,3 +20,5 @@ jobs:
           fetch-depth: 0
 
       - uses: MineInAbyss/publish-action@better-semver
+        maven-username: ${{ secrets.MAVEN_PUBLISH_USERNAME }}
+        maven-password: ${{ secrets.MAVEN_PUBLISH_PASSWORD }}
