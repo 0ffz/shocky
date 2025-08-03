@@ -1,20 +1,27 @@
 package me.dvyy.shocky
 
+import me.dvyy.shocky.dev.ShockyDevServer
+import me.dvyy.shocky.routes.RoutesBuilder
 import java.nio.file.Path
 import kotlin.io.path.Path
 import kotlin.io.path.div
 
+sealed interface AssetSource {
+    class Folder(val path: Path, val destRoot: Path) : AssetSource
+    class ResourcesFolder(val path: String, val destRoot: Path) : AssetSource
+}
+
 data class ShockyConfiguration(
     var dest: Path = Path("out"),
     var siteRoot: Path = Path("site"),
-    var assets: MutableList<Path> = mutableListOf(),
+    var assets: MutableList<AssetSource> = mutableListOf(),
     var port: Int = 8080,
-    var watch: MutableList<Path> = mutableListOf(),
     var currentDir: Path = Path("."),
-    private var routing: SiteRouting = siteRouting { },
     private var beforeGenerate: () -> Unit = {},
     private var afterGenerate: () -> Unit = {},
 ) {
+    private val routing by lazy { RoutesBuilder(siteRoot, dest) }
+
     private val tailwindOptions = TailwindOptionsBuilder()
 
     fun tailwind(block: TailwindOptionsBuilder.() -> Unit) {
@@ -30,15 +37,19 @@ data class ShockyConfiguration(
     }
 
     fun assets(vararg paths: String) {
-        assets.addAll(paths.map { currentDir / it })
+        assets.addAll(paths.map { AssetSource.Folder(currentDir / it, dest) })
     }
 
-    fun watch(vararg paths: String) {
-        watch.addAll(paths.map { currentDir / it })
+    fun assetsFromResources(vararg sources: String) {
+        assets.addAll(sources.map { AssetSource.ResourcesFolder(it, dest) })
     }
 
-    fun routing(block: SiteRouting.() -> Unit) {
-        routing = siteRouting(siteRoot) { block() }
+    fun assets(vararg sources: AssetSource) {
+        assets.addAll(sources)
+    }
+
+    fun routing(block: RoutesBuilder.() -> Unit) {
+        routing.apply { block() }
     }
 
     fun beforeGenerate(block: () -> Unit) {
@@ -54,11 +65,21 @@ data class ShockyConfiguration(
         routing = routing,
         assets = assets,
         tailwindOptions = tailwindOptions.build(),
-        port = port,
         beforeGenerate = beforeGenerate,
         afterGenerate = afterGenerate,
-        watch = watch
     )
 }
 
-fun shocky(block: ShockyConfiguration.() -> Unit) = ShockyConfiguration().apply(block).build()
+fun shocky(
+    port: Int = 8080,
+    dest: Path = Path("out"),
+    watch: List<Path> = listOf(),
+    init: ShockyConfiguration.() -> Unit,
+): ShockyDevServer {
+    return ShockyDevServer(
+        port = port,
+        dest = dest,
+        watch = watch,
+        init = init
+    )
+}

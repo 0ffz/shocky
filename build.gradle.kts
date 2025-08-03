@@ -1,11 +1,11 @@
 plugins {
-    kotlin("jvm") version "2.2.0-RC"
-    kotlin("plugin.serialization") version "2.2.0-RC"
+    kotlin("jvm") version "2.2.0"
+    kotlin("plugin.serialization") version "2.2.0"
     `maven-publish`
 }
 
 group = "me.dvyy"
-version = "0.2.0"
+version = "0.3"
 
 repositories {
     mavenCentral()
@@ -30,6 +30,9 @@ dependencies {
 
 kotlin {
     jvmToolchain(21)
+    compilerOptions {
+        freeCompilerArgs.add("-Xcontext-parameters")
+    }
 }
 
 java {

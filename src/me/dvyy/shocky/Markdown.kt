@@ -9,13 +9,17 @@ import org.intellij.markdown.parser.MarkdownParser
 val flavour = GFMFlavourDescriptor()
 
 infix fun Tag.markdown(@Language("markdown") src: String) {
-    val parsedTree = MarkdownParser(flavour).buildMarkdownTreeFromString(src)
-    val html = HtmlGenerator(src, parsedTree, flavour).generateHtml()
-
+    val html = src.markdownToHTML()
     when (this) {
         is HTMLTag -> unsafe { +html }
         is FlowContent -> div { unsafe { +html } }
     }
+}
+
+fun String.markdownToHTML(): String {
+    val parsedTree = MarkdownParser(flavour).buildMarkdownTreeFromString(this)
+    val html = HtmlGenerator(this, parsedTree, flavour).generateHtml()
+    return html
 }
 
 infix fun Tag.md(@Language("markdown") src: String) {
