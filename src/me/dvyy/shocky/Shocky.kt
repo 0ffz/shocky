@@ -108,11 +108,8 @@ class Shocky(
                 val destPath = (it.destRoot / it.path)
                 destPath.createParentDirectories()
                 if (destPath.notExists()) destPath.createFile()
-                destPath.writer().use { writer ->
-                    this.javaClass.getResourceAsStream("/${source.path}")
-                        .bufferedReader().use {
-                            it.copyTo(writer)
-                        }
+                destPath.outputStream().use { writer ->
+                    this.javaClass.getResourceAsStream("/${source.path}").use { it.copyTo(writer) }
                 }
             }
         }
