@@ -1,5 +1,6 @@
 package me.dvyy.shocky.routes
 
+import co.touchlab.kermit.Logger
 import me.dvyy.shocky.page.Page
 import me.dvyy.shocky.page.PageMeta
 import java.nio.file.Path
@@ -60,7 +61,7 @@ class RoutesBuilder(
         val absolutePath = rootPath / relativePath
 
         if (absolutePath.notExists()) {
-            println("Warn: tried loading page at $relativePath, but it does not exist!")
+            Logger.w { "Tried loading page at $relativePath, but it does not exist!" }
             return
         }
 

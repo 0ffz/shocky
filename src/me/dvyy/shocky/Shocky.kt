@@ -1,5 +1,6 @@
 package me.dvyy.shocky
 
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
@@ -14,6 +15,7 @@ import me.dvyy.shocky.page.Pages
 import me.dvyy.shocky.routes.RoutesBuilder
 import java.nio.file.Path
 import kotlin.io.path.*
+import kotlin.reflect.KType
 import kotlin.time.measureTime
 
 class Shocky(
@@ -21,12 +23,16 @@ class Shocky(
     val routing: RoutesBuilder,
     val assets: List<AssetSource>,
     val tailwindOptions: TailwindOptions,
+    val siteUrl: String = "",
+    dependencies: Map<KType, Any?>,
     val beforeGenerate: () -> Unit,
     val afterGenerate: () -> Unit,
 ) {
     val site = Site(
         root = routing.rootPath,
-        pages = Pages(routing.pages)
+        pages = Pages(routing.pages),
+        rootUrl = siteUrl,
+        dependencies = dependencies,
     )
 
     @OptIn(ExperimentalPathApi::class)
@@ -34,14 +40,17 @@ class Shocky(
         measureTime {
             if (!devMode) dest.deleteRecursively()
             dest.createDirectories()
-        }.let { println("Cleared output in: $it") }
+        }.let { Logger.i { "Cleared output in: $it" } }
 
         launch {
             beforeGenerate()
             measureTime {
-                assets.forEach { processAsset(it) }
-            }.let { println("Copied extra inputs in: $it") }
-            println("Generated html files in: ${measureTime { generateDocuments(devMode) }}")
+                assets.forEach { asset ->
+                    runCatching { processAsset(asset) }
+                        .onFailure { Logger.e("Could not find asset $asset in classpath") }
+                }
+            }.let { Logger.i { "Copied extra inputs in: $it" } }
+            Logger.i { "Generated html files in: ${measureTime { generateDocuments(devMode) }}" }
 
             if (tailwindOptions.enabled) {
                 val tailwindPath = shockyInstallPath / "tailwind" / "tailwind-cli-${tailwindOptions.version}"

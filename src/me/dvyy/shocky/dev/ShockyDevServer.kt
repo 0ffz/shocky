@@ -1,27 +1,21 @@
 package me.dvyy.shocky.dev
 
-import io.ktor.http.ContentType
-import io.ktor.server.application.Application
-import io.ktor.server.application.install
-import io.ktor.server.cio.CIO
-import io.ktor.server.engine.embeddedServer
-import io.ktor.server.http.content.staticFiles
-import io.ktor.server.response.respondText
-import io.ktor.server.routing.get
-import io.ktor.server.routing.routing
-import io.ktor.server.websocket.WebSockets
-import io.ktor.server.websocket.webSocket
-import io.ktor.websocket.Frame
+import co.touchlab.kermit.Logger
+import co.touchlab.kermit.SimpleFormatter
+import co.touchlab.kermit.platformLogWriter
+import io.ktor.http.*
+import io.ktor.server.application.*
+import io.ktor.server.cio.*
+import io.ktor.server.engine.*
+import io.ktor.server.http.content.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
+import io.ktor.server.websocket.*
+import io.ktor.websocket.*
 import io.methvin.watcher.DirectoryWatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.dvyy.shocky.ShockyConfiguration
@@ -44,7 +38,8 @@ class ShockyDevServer(
     fun startServer(
         configure: Application.() -> Unit = {},
     ) {
-        println("Starting server")
+        Logger.setLogWriters(platformLogWriter(SimpleFormatter))
+        Logger.i { "Starting server at http://localhost:$port" }
         embeddedServer(
             CIO,
             port = port,
@@ -55,7 +50,7 @@ class ShockyDevServer(
                 webSocket("/ping") {
                     val job = launch {
                         generatorFlow.collectLatest {
-                            println("Sending reload")
+                            Logger.i { "Sending reload" }
                             send(Frame.Text("reload"))
                         }
                     }
@@ -98,20 +93,20 @@ class ShockyDevServer(
                 .debounce(300.milliseconds)
                 .collectLatest { event ->
                     if (rebuildSourceFiles) rebuild()
-                    else createInstance().generate(devMode = true)
+                    else createInstance(isLocalDevServer = true).generate(devMode = true)
                     generatorFlow.emit(Unit)
                 }
         }
 
         launch {
-            createInstance().generate(devMode = true)
+            createInstance(isLocalDevServer = true).generate(devMode = true)
             startServer()
         }
     }
 
 
     suspend fun rebuild() = withContext(buildQueue) {
-        println("Rebuilding...")
+        Logger.i { "Rebuilding..." }
         val amperExists = Path("amper").exists()
         measureTime {
             (if (amperExists) ProcessBuilder("./amper", "run", "generate", "dev")
@@ -128,21 +123,23 @@ class ShockyDevServer(
 //            redirectOutput(ProcessBuilder.Redirect.INHERIT)
                 redirectError(ProcessBuilder.Redirect.INHERIT)
             }.start().onExit().join()
-        }.let { println("Rebuilt in: $it") }
+        }.let { Logger.i { "Rebuilt in: $it" } }
     }
 
     suspend fun run(args: Array<String>) {
         val type = args.getOrNull(0)
         val devMode = args.getOrNull(1) == "dev"
         when (type) {
-            "generate" -> createInstance().generate(devMode = devMode)
+            "generate" -> createInstance(isLocalDevServer = devMode).generate(devMode = devMode)
             "serve" -> startServerAndWatch(rebuildSourceFiles = devMode)
 
             else -> {
-                println("Pass a command, [generate, serve]")
+                Logger.i { "Pass a command, [generate, serve]" }
             }
         }
     }
 
-    fun createInstance() = ShockyConfiguration().apply(init).build()
+    fun createInstance(
+        isLocalDevServer: Boolean,
+    ) = ShockyConfiguration(isLocalDevServer).apply(init).build()
 }

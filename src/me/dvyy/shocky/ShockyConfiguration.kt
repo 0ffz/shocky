@@ -5,21 +5,27 @@ import me.dvyy.shocky.routes.RoutesBuilder
 import java.nio.file.Path
 import kotlin.io.path.Path
 import kotlin.io.path.div
+import kotlin.reflect.KType
+import kotlin.reflect.typeOf
 
 sealed interface AssetSource {
-    class Folder(val path: Path, val destRoot: Path) : AssetSource
-    class ResourcesFolder(val path: String, val destRoot: Path) : AssetSource
+    data class Folder(val path: Path, val destRoot: Path) : AssetSource
+    data class ResourcesFolder(val path: String, val destRoot: Path) : AssetSource
 }
 
 data class ShockyConfiguration(
+    val isLocalDevServer: Boolean = false,
     var dest: Path = Path("out"),
     var siteRoot: Path = Path("site"),
     var assets: MutableList<AssetSource> = mutableListOf(),
     var port: Int = 8080,
+    var siteUrl: String = "",
     var currentDir: Path = Path("."),
     private var beforeGenerate: () -> Unit = {},
     private var afterGenerate: () -> Unit = {},
 ) {
+    val dependencies: MutableMap<KType, Any?> = mutableMapOf()
+
     private val routing by lazy { RoutesBuilder(siteRoot, dest) }
 
     private val tailwindOptions = TailwindOptionsBuilder()
@@ -60,12 +66,18 @@ data class ShockyConfiguration(
         afterGenerate = block
     }
 
+    inline fun <reified T: Any> provide(value: T) {
+        dependencies[typeOf<T>()] = value
+    }
+
     fun build() = Shocky(
         dest = dest,
         routing = routing,
         assets = assets,
         tailwindOptions = tailwindOptions.build(),
+        siteUrl = if (isLocalDevServer) "" else siteUrl,
         beforeGenerate = beforeGenerate,
+        dependencies = dependencies.toMap(),
         afterGenerate = afterGenerate,
     )
 }

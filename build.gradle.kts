@@ -24,6 +24,7 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:1.5.13")
     implementation("io.methvin:directory-watcher:0.18.0")
     implementation("com.vladsch.flexmark:flexmark-all:0.64.8")
+    implementation("co.touchlab:kermit:2.0.4")
 }
 
 kotlin {

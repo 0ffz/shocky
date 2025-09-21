@@ -1,5 +1,6 @@
 package me.dvyy.shocky.dev
 
+import co.touchlab.kermit.Logger
 import java.net.URL
 import java.nio.file.Files
 import java.nio.file.Path
@@ -28,7 +29,7 @@ fun installTailwindIfNecessary(
 ) {
     if(dest.exists()) return
 
-    println("Installing TailwindCSS $tailwindVersion to $dest...")
+    Logger.i {"Installing TailwindCSS $tailwindVersion to $dest..." }
 
     val tailwindBaseUrl = "https://github.com/tailwindlabs/tailwindcss/releases/download/$tailwindVersion"
     val osName = System.getProperty("os.name").lowercase()
