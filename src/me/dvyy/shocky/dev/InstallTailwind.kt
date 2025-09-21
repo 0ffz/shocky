@@ -3,8 +3,24 @@ package me.dvyy.shocky.dev
 import java.net.URL
 import java.nio.file.Files
 import java.nio.file.Path
+import kotlin.io.path.Path
 import kotlin.io.path.createDirectories
+import kotlin.io.path.div
 import kotlin.io.path.exists
+
+/**
+ * Gets OS preferred path for storing applications, this is used to cache tailwind verisons.
+ */
+val shockyInstallPath: Path = run {
+    val osName = System.getProperty("os.name").lowercase()
+    val userHome = System.getProperty("user.home")
+
+    when {
+        osName.contains("win") -> Path(System.getenv("LOCALAPPDATA") ?: "$userHome\\AppData\\Local") / "Shocky"
+        osName.contains("mac") -> Path(userHome) / "Library" / "Application Support" / "Shocky"
+        else -> Path(userHome) / ".local" / "share" / "shocky"
+    }
+}.createDirectories()
 
 fun installTailwindIfNecessary(
     dest: Path,
@@ -12,7 +28,7 @@ fun installTailwindIfNecessary(
 ) {
     if(dest.exists()) return
 
-    println("Installing TailwindCSS $tailwindVersion...")
+    println("Installing TailwindCSS $tailwindVersion to $dest...")
 
     val tailwindBaseUrl = "https://github.com/tailwindlabs/tailwindcss/releases/download/$tailwindVersion"
     val osName = System.getProperty("os.name").lowercase()

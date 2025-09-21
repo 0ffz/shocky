@@ -21,9 +21,9 @@ dependencies {
     implementation("io.ktor:ktor-server-cio:3.1.3")
     implementation("io.ktor:ktor-server-websockets:3.1.3")
     implementation("io.ktor:ktor-server-html-builder:3.1.3")
-    implementation("org.jetbrains:markdown:0.7.3")
     implementation("ch.qos.logback:logback-classic:1.5.13")
     implementation("io.methvin:directory-watcher:0.18.0")
+    implementation("com.vladsch.flexmark:flexmark-all:0.64.8")
 }
 
 kotlin {

@@ -8,6 +8,7 @@ import kotlinx.html.dom.append
 import kotlinx.html.dom.write
 import kotlinx.html.script
 import me.dvyy.shocky.dev.installTailwindIfNecessary
+import me.dvyy.shocky.dev.shockyInstallPath
 import me.dvyy.shocky.page.Page
 import me.dvyy.shocky.page.Pages
 import me.dvyy.shocky.routes.RoutesBuilder
@@ -43,7 +44,7 @@ class Shocky(
             println("Generated html files in: ${measureTime { generateDocuments(devMode) }}")
 
             if (tailwindOptions.enabled) {
-                val tailwindPath = dest / "../build/tailwind-${tailwindOptions.version}"
+                val tailwindPath = shockyInstallPath / "tailwind" / "tailwind-cli-${tailwindOptions.version}"
                 installTailwindIfNecessary(tailwindPath, tailwindOptions.version)
                 runCommand(
                     buildList {
