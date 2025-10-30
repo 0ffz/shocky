@@ -1,8 +1,11 @@
 package me.dvyy.shocky.routes
 
 import co.touchlab.kermit.Logger
+import io.ktor.util.*
+import me.dvyy.shocky.page.FileContent
 import me.dvyy.shocky.page.Page
 import me.dvyy.shocky.page.PageMeta
+import org.intellij.lang.annotations.Language
 import java.nio.file.Path
 import kotlin.io.path.*
 
@@ -56,8 +59,29 @@ class RoutesBuilder(
     }
 
     context(route: Route)
+    fun include(
+        path: String,
+        @Language("Yaml")
+        frontMatter: String = "{}",
+        @Language("Markdown")
+        content: String = "",
+        template: Page.() -> Unit = { defaultTemplate() },
+    ) {
+        val relativePath = (route.path / Path(path).normalizeAndRelativize()).normalize()
+        val output = outputFileFor(relativePath)
+        val url = relativePath.url()
+
+        PageMeta.fromFileContent(
+            url = "/$url",
+            outputFile = output,
+            fileContent = FileContent(frontMatter, content),
+            templateSelector = template
+        )
+    }
+
+    context(route: Route)
     fun include(path: String = ".", template: Page.() -> Unit = { defaultTemplate() }) {
-        val relativePath = (route.path / path).normalize()
+        val relativePath = (route.path / Path(path).normalizeAndRelativize()).normalize()
         val absolutePath = rootPath / relativePath
 
         if (absolutePath.notExists()) {
@@ -83,7 +107,7 @@ class RoutesBuilder(
         if (!root.exists()) return
         root.walk()
             .filter { it.isRegularFile() && it.extension == "md" }
-            .forEach { doc -> include(doc.relativeTo(rootPath).pathString, template) }
+            .forEach { doc -> include(doc.relativeTo(rootPath).pathString, template = template) }
     }
 
     @PublishedApi
@@ -94,7 +118,7 @@ class RoutesBuilder(
         else (path.parent ?: Path(".")) / "${path.nameWithoutExtension}.html").normalize()
 
     private fun Path.url(): Path =
-       (if (nameWithoutExtension == "index") (parent ?: Path(".")) else (parent ?: Path(".")) / nameWithoutExtension)
+        (if (nameWithoutExtension == "index") (parent ?: Path(".")) else (parent ?: Path(".")) / nameWithoutExtension)
             .normalize()
 }
 

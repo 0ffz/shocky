@@ -20,7 +20,7 @@ import kotlin.reflect.typeOf
  */
 data class PageMeta(
     val yaml: Yaml,
-    val inputFile: Path,
+    val inputFile: Path?,
     val outputFile: Path,
     val frontMatter: YamlMap,
     val content: String,
@@ -58,16 +58,15 @@ data class PageMeta(
             monthName(MonthNames.ENGLISH_ABBREVIATED); char(' '); dayOfMonth(); chars(", "); year();
         }
 
-        fun fromFile(
-            file: Path,
+        fun fromFileContent(
+            file: Path? = null,
             url: String,
             outputFile: Path,
+            fileContent: FileContent,
             templateSelector: Page.() -> Unit,
         ): PageMeta {
-            val fileContent = readFile(file)
             val frontMatterNode = yaml.parseToYamlNode(fileContent.frontMatter.ifEmpty { "{}" }).yamlMap
             val common = yaml.decodeFromYamlNode(serializer<CommonFrontMatter>(), frontMatterNode)
-
             return PageMeta(
                 yaml = yaml,
                 frontMatter = frontMatterNode,
@@ -79,12 +78,28 @@ data class PageMeta(
                         .firstOrNull()
                         ?.takeIf { it.contains("#") }
                         ?.replace("#+".toRegex(), "")?.trim()
-                    ?: file.nameWithoutExtension,
+                    ?: file?.nameWithoutExtension ?: "Untitled",
                 desc = common.desc,
                 url = url,
                 template = common.template,
                 tags = common.tags,
                 date = common.date?.let { LocalDate.parse(it) },
+                templateSelector = templateSelector,
+            )
+        }
+
+        fun fromFile(
+            file: Path,
+            url: String,
+            outputFile: Path,
+            templateSelector: Page.() -> Unit,
+        ): PageMeta {
+            val fileContent = readFile(file)
+            return fromFileContent(
+                file = file,
+                url = url,
+                outputFile = outputFile,
+                fileContent = fileContent,
                 templateSelector = templateSelector,
             )
         }
