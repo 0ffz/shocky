@@ -1,3 +1,9 @@
+<!--
+category: System
+tags: [cancel, stop, abort, indicator, close, status, update, decline, process, deny]
+version: "2.12"
+unicode: "fa0c"
+-->
 <svg
   xmlns="http://www.w3.org/2000/svg"
   width="24"

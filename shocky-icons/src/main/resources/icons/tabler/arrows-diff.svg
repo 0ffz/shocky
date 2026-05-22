@@ -1,3 +1,9 @@
+<!--
+tags: [direction, right, left, west, east, arrows, diff, navigation, flow, movement]
+category: Arrows
+version: "1.79"
+unicode: "f296"
+-->
 <svg
   xmlns="http://www.w3.org/2000/svg"
   width="24"

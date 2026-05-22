@@ -1,3 +1,9 @@
+<!--
+tags: [relation, above, below, status, society, important, hierarchy, creative, artistic, visual]
+category: Design
+version: "1.39"
+unicode: "ee9d"
+-->
 <svg
   xmlns="http://www.w3.org/2000/svg"
   width="24"
@@ -9,9 +15,9 @@
   stroke-linecap="round"
   stroke-linejoin="round"
 >
-  <path d="M10 3h4v4h-4z" />
-  <path d="M3 17h4v4h-4z" />
-  <path d="M17 17h4v4h-4z" />
+  <path d="M10 3h4v4h-4l0 -4" />
+  <path d="M3 17h4v4h-4l0 -4" />
+  <path d="M17 17h4v4h-4l0 -4" />
   <path d="M7 17l5 -4l5 4" />
   <path d="M12 7l0 6" />
 </svg>

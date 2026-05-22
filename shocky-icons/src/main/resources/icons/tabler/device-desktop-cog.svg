@@ -1,3 +1,9 @@
+<!--
+category: Devices
+tags: [settings, adjust, manage, configure, control, organize, customize, tune, optimize, arrange]
+version: "2.10"
+unicode: "f862"
+-->
 <svg
   xmlns="http://www.w3.org/2000/svg"
   width="24"
@@ -12,7 +18,7 @@
   <path d="M12 16h-8a1 1 0 0 1 -1 -1v-10a1 1 0 0 1 1 -1h16a1 1 0 0 1 1 1v7" />
   <path d="M7 20h5" />
   <path d="M9 16v4" />
-  <path d="M19.001 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+  <path d="M17.001 19a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
   <path d="M19.001 15.5v1.5" />
   <path d="M19.001 21v1.5" />
   <path d="M22.032 17.25l-1.299 .75" />

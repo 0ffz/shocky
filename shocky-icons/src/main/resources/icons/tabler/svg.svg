@@ -1,3 +1,9 @@
+<!--
+tags: [file, format, extension, filetype, plugin, addon, module, component, svg, extra]
+category: Extensions
+version: "1.75"
+unicode: "f25a"
+-->
 <svg
   xmlns="http://www.w3.org/2000/svg"
   width="24"

@@ -1,3 +1,9 @@
+<!--
+category: Weather
+tags: [alert, warning, notice, attention, caution, highlight, emphasis, critical, important, urgent]
+version: "2.10"
+unicode: "f852"
+-->
 <svg
   xmlns="http://www.w3.org/2000/svg"
   width="24"

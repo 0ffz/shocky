@@ -1,3 +1,9 @@
+<!--
+category: Communication
+tags: [alert, notice, warn, caution, attention, message, important, prompt, danger, highlight]
+version: "2.10"
+unicode: "f93e"
+-->
 <svg
   xmlns="http://www.w3.org/2000/svg"
   width="24"

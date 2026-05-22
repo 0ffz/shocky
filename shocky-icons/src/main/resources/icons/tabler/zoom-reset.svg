@@ -1,3 +1,9 @@
+<!--
+tags: [refresh, default, settings, vision, zoom, reset, location, navigation, magnify, enlarge]
+category: Map
+version: "1.78"
+unicode: "f295"
+-->
 <svg
   xmlns="http://www.w3.org/2000/svg"
   width="24"

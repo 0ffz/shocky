@@ -1,3 +1,9 @@
+<!--
+category: Devices
+tags: [halt, freeze, stop, break, interject, suspend, wait, hold, interrupt, delay]
+version: "2.10"
+unicode: "f8b7"
+-->
 <svg
   xmlns="http://www.w3.org/2000/svg"
   width="24"

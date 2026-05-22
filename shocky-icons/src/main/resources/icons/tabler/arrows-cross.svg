@@ -1,3 +1,9 @@
+<!--
+tags: [direction, north, south, arrows, cross, navigation, flow, movement, route, path]
+category: Arrows
+version: "1.53"
+unicode: "effe"
+-->
 <svg
   xmlns="http://www.w3.org/2000/svg"
   width="24"

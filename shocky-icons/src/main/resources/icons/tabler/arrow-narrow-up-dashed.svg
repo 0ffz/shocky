@@ -1,3 +1,9 @@
+<!--
+tags: [top, point, arrow, narrow, dashed, direction, pointer, increase, navigation, flow]
+category: Arrows
+version: "3.19"
+unicode: "10065"
+-->
 <svg
   xmlns="http://www.w3.org/2000/svg"
   width="24"

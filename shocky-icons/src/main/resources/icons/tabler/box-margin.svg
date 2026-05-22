@@ -1,3 +1,9 @@
+<!--
+tags: [css, cascading, style, section, space, text, content, outside, container, box]
+category: Design
+version: "1.39"
+unicode: "ee0b"
+-->
 <svg
   xmlns="http://www.w3.org/2000/svg"
   width="24"
@@ -9,7 +15,7 @@
   stroke-linecap="round"
   stroke-linejoin="round"
 >
-  <path d="M8 8h8v8h-8z" />
+    <path d="M8 8h8v8h-8l0 -8"/>
   <path d="M4 4v.01" />
   <path d="M8 4v.01" />
   <path d="M12 4v.01" />

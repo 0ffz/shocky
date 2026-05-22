@@ -1,3 +1,9 @@
+<!--
+category: System
+tags: [warning, muted, caution, inactive, silent, unalerted, disabled, quiet, off, dormant]
+version: "2.33"
+unicode: "fc66"
+-->
 <svg
   xmlns="http://www.w3.org/2000/svg"
   width="24"

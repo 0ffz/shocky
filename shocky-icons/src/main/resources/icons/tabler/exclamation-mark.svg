@@ -1,3 +1,9 @@
+<!--
+category: System
+tags: [warning, caution, alert, danger, "!", exclamation, mark, important, notice, attention]
+version: "1.49"
+unicode: "efb4"
+-->
 <svg
   xmlns="http://www.w3.org/2000/svg"
   width="24"

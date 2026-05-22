@@ -1,3 +1,9 @@
+<!--
+tags: [shape, direction, north, top, west, circle, arrow, left, pointer, increase]
+category: Arrows
+version: "2.3"
+unicode: "f700"
+-->
 <svg
   xmlns="http://www.w3.org/2000/svg"
   width="24"

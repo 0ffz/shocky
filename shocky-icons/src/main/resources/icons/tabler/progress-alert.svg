@@ -1,3 +1,9 @@
+<!--
+tags: [warning, notification, caution, indicator, status, attention, update, signal, process, info]
+version: "2.12"
+unicode: "fa07"
+category: System
+-->
 <svg
   xmlns="http://www.w3.org/2000/svg"
   width="24"

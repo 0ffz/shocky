@@ -1,3 +1,9 @@
+<!--
+tags: [music, song, playlist, melody, device, voice, recorder, dictation, machine, player]
+category: Media
+version: "1.28"
+unicode: "ed47"
+-->
 <svg
   xmlns="http://www.w3.org/2000/svg"
   width="24"
@@ -9,5 +15,5 @@
   stroke-linecap="round"
   stroke-linejoin="round"
 >
-  <path d="M12 12m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+  <path d="M5 12a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
 </svg>

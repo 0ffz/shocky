@@ -1,3 +1,9 @@
+<!--
+category: Arrows
+tags: [indicator, navigation, direction, toggle, switch, movement, select, option, upward, downward]
+version: "2.31"
+unicode: "fc44"
+-->
 <svg
   xmlns="http://www.w3.org/2000/svg"
   width="24"

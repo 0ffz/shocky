@@ -1,3 +1,9 @@
+<!--
+category: Devices
+tags: [alert, warning, notice, attention, caution, signal, advise, notify, warn, declare]
+version: "2.10"
+unicode: "f8ed"
+-->
 <svg
   xmlns="http://www.w3.org/2000/svg"
   width="24"

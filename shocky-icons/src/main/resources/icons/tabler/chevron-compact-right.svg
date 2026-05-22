@@ -1,3 +1,9 @@
+<!--
+tags: [arrow, direction, navigate, forward, move, point, indicator, guide, orient, chevron]
+category: Arrows
+version: "2.24"
+unicode: "faf2"
+-->
 <svg
   xmlns="http://www.w3.org/2000/svg"
   width="24"

@@ -1,3 +1,9 @@
+<!--
+tags: [shape, direction, style, navigation, design, indicator, ui, interface, guide, arrow]
+category: Arrows
+version: "2.23"
+unicode: "fade"
+-->
 <svg
   xmlns="http://www.w3.org/2000/svg"
   width="24"

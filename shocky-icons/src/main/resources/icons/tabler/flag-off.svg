@@ -1,3 +1,9 @@
+<!--
+tags: [banner, pin, report, map, warning, alert, flag, off, location, navigation]
+category: Map
+version: "1.65"
+unicode: "f12d"
+-->
 <svg
   xmlns="http://www.w3.org/2000/svg"
   width="24"

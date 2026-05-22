@@ -1,3 +1,9 @@
+<!--
+tags: [display, monitor, interface, view, multitask, split, setup, extend, panel, screen]
+category: Devices
+version: "2.16"
+unicode: "fa59"
+-->
 <svg
   xmlns="http://www.w3.org/2000/svg"
   width="24"
@@ -9,6 +15,6 @@
   stroke-linecap="round"
   stroke-linejoin="round"
 >
-  <path d="M5 4l8 3v15l-8 -3z" />
+  <path d="M5 4l8 3v15l-8 -3l0 -15" />
   <path d="M13 19h6v-15h-14" />
 </svg>

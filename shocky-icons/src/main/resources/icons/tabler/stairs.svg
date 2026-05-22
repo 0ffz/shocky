@@ -1,3 +1,9 @@
+<!--
+tags: [building, step, floor, staircase, stairs, location, navigation, geography, place, position]
+category: Map
+version: "1.17"
+unicode: "eca6"
+-->
 <svg
   xmlns="http://www.w3.org/2000/svg"
   width="24"

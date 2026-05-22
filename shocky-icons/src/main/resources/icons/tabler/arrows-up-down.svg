@@ -1,3 +1,9 @@
+<!--
+tags: [direction, north, south, arrows, down, top, increase, bottom, decrease, navigation]
+category: Arrows
+version: "1.35"
+unicode: "edb6"
+-->
 <svg
   xmlns="http://www.w3.org/2000/svg"
   width="24"

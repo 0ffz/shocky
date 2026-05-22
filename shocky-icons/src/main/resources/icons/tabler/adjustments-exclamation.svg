@@ -1,3 +1,9 @@
+<!--
+category: System
+tags: [settings, alert, warn, caution, important, urgent, notice, attention, highlight, notify]
+version: "2.10"
+unicode: "f802"
+-->
 <svg
   xmlns="http://www.w3.org/2000/svg"
   width="24"

@@ -1,3 +1,9 @@
+<!--
+tags: [direction, south, arrow, autofit, down, pointer, bottom, decrease, navigation, flow]
+category: Arrows
+version: "1.42"
+unicode: "ef32"
+-->
 <svg
   xmlns="http://www.w3.org/2000/svg"
   width="24"

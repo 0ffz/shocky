@@ -1,3 +1,9 @@
+<!--
+tags: [drag, move, arrows, left, down, bottom, decrease, navigation, flow, fall]
+category: Arrows
+version: "1.39"
+unicode: "ee00"
+-->
 <svg
   xmlns="http://www.w3.org/2000/svg"
   width="24"

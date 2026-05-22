@@ -1,3 +1,9 @@
+<!--
+tags: [electric, electricity, diagram, circuit, ground, digital, energy, voltage, power, current]
+category: Electrical
+version: "1.77"
+unicode: "f27b"
+-->
 <svg
   xmlns="http://www.w3.org/2000/svg"
   width="24"
@@ -10,5 +16,5 @@
   stroke-linejoin="round"
 >
   <path d="M12 13v-10" />
-  <path d="M12 21l-6 -8h12z" />
+  <path d="M12 21l-6 -8h12l-6 8" />
 </svg>

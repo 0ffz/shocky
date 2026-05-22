@@ -1,3 +1,9 @@
+<!--
+tags: [music, website, music company, audio, brand, bandcamp, logo, company, trademark, identity]
+category: Brand
+version: "1.71"
+unicode: "f207"
+-->
 <svg
   xmlns="http://www.w3.org/2000/svg"
   width="24"
@@ -9,5 +15,5 @@
   stroke-linecap="round"
   stroke-linejoin="round"
 >
-  <path d="M8.5 6h13.5l-7 12h-13z" />
+    <path d="M8.5 6h13.5l-7 12h-13l6.5 -12"/>
 </svg>
