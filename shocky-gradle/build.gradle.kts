@@ -23,3 +23,9 @@ gradlePlugin {
         }
     }
 }
+
+idofront {
+    publication {
+        addJavaPublication = false
+    }
+}
