@@ -95,6 +95,7 @@ class ShockyDevServer(
         ProcessBuilder(
             gradleBinaryName,
             gradleTask,
+            "--dev-mode",
             "--continuous",
             "--parallel",
             "--configuration-cache",

@@ -7,6 +7,7 @@ import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.*
+import org.gradle.api.tasks.options.Option
 import org.gradle.process.ExecOperations
 import org.gradle.workers.WorkParameters
 import org.gradle.workers.WorkerExecutor
@@ -14,6 +15,7 @@ import javax.inject.Inject
 
 interface TailwindWorkParameters : WorkParameters {
     @get:InputFile
+    @get:PathSensitive(PathSensitivity.ABSOLUTE)
     val inputFile: RegularFileProperty
 
     @get:OutputFile
@@ -23,6 +25,7 @@ interface TailwindWorkParameters : WorkParameters {
     val version: Property<String>
 }
 
+@CacheableTask
 abstract class AbstractShockyTask @Inject constructor(
     private val objectFactory: ObjectFactory,
 ) : DefaultTask() {
@@ -41,12 +44,8 @@ abstract class AbstractShockyTask @Inject constructor(
     @get:Classpath
     abstract var classpath: FileCollection
 
-    //    @get:InputDirectory
-//    abstract val docs: DirectoryProperty
-    @get:OutputDirectory
-    abstract val buildDir: DirectoryProperty
-
     @get:InputDirectory
+    @get:PathSensitive(PathSensitivity.NONE)
     abstract val source: DirectoryProperty
 
     @Inject
@@ -64,7 +63,7 @@ abstract class AbstractShockyTask @Inject constructor(
 //        buildDir.convention(layout.buildDirectory.dir("shocky/output"))
     }
 
-    protected fun runInternal(isServe: Boolean) {
+    protected fun runInternal(isServe: Boolean, devMode: Boolean = isServe) {
 //        val buildDir = buildDir.get().asFile.absolutePath
         val buildDir = outputDir.get().asFile.absolutePath
         val sourceDir = source.get().asFile.absolutePath
@@ -73,7 +72,7 @@ abstract class AbstractShockyTask @Inject constructor(
             it.mainClass.set(mainClass)
             it.args = listOf(
                 if (isServe) "serve" else "generate",
-                "--dev-mode=${if (isServe) "true" else "false"}",
+                "--dev-mode=${if (devMode) "true" else "false"}",
                 "--gradle-task=${generateTaskName.get()}",
                 "--dest=${buildDir}",
                 "--source=${sourceDir}"
@@ -92,15 +91,23 @@ abstract class AbstractShockyTask @Inject constructor(
     }
 }
 
+@CacheableTask
 abstract class ShockyGenerateTask @Inject constructor(
     objectFactory: ObjectFactory,
 ) : AbstractShockyTask(objectFactory) {
+
+    @get:Input
+    @get:Optional
+    @get:Option(option = "dev-mode", description = "Run generation in dev mode")
+    abstract val devMode: Property<Boolean>
+
     @TaskAction
     fun run() {
-        runInternal(isServe = false)
+        runInternal(isServe = false, devMode = devMode.getOrElse(false))
     }
 }
 
+@CacheableTask
 abstract class ShockyServeTask @Inject constructor(
     objectFactory: ObjectFactory,
 ) : AbstractShockyTask(objectFactory) {

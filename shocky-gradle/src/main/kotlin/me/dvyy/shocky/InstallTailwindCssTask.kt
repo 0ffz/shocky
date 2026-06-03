@@ -1,6 +1,8 @@
 package me.dvyy.shocky
 
 import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.CacheableTask
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 import java.net.URL
@@ -8,19 +10,27 @@ import java.nio.file.Files
 import kotlin.io.path.createParentDirectories
 import kotlin.io.path.exists
 
+@CacheableTask
 abstract class InstallTailwindCssTask : DefaultTask() {
-    @OutputFile
+    @get:OutputFile
     val dest = tailwindExecutable
+
+    @get:Input
+    val version: String = tailwindVersion
+
+    @get:Input
+    val osName: String = System.getProperty("os.name").lowercase()
+
+    @get:Input
+    val arch: String = System.getProperty("os.arch").lowercase()
 
     @TaskAction
     fun run() {
         if (dest.exists()) return
         dest.createParentDirectories()
-        project.logger.info("Installing TailwindCSS $tailwindVersion to $dest...")
+        logger.info("Installing TailwindCSS $version to $dest...")
 
-        val tailwindBaseUrl = "https://github.com/tailwindlabs/tailwindcss/releases/download/$tailwindVersion"
-        val osName = System.getProperty("os.name").lowercase()
-        val arch = System.getProperty("os.arch").lowercase()
+        val tailwindBaseUrl = "https://github.com/tailwindlabs/tailwindcss/releases/download/$version"
 
         val tailwindFileName = when {
             osName.contains("win") && arch.contains("64") -> "tailwindcss-windows.exe"

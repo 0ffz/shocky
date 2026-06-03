@@ -29,7 +29,6 @@ abstract class ShockyPlugin : Plugin<Project> {
 
         val container = project.objects.domainObjectContainer(ShockyExtension::class.java) { name ->
             project.objects.newInstance(ShockyExtension::class.java, name).apply {
-                buildDir.convention(project.layout.buildDirectory.dir("shocky/$name/build"))
                 tailwind.version.convention(tailwindVersion)
             }
         }
@@ -58,7 +57,6 @@ abstract class ShockyPlugin : Plugin<Project> {
         task.dependsOn(installTask)
         task.outputDir.set(extension.outputDir)
         task.source.set(extension.source)
-        task.buildDir.set(extension.buildDir)
         task.generateTaskName.set(generateTaskName)
         task.mainClass.set(extension.mainClass)
         task.tailwind.inputFile.set(extension.tailwind.inputFile)

@@ -41,9 +41,6 @@ data class Page(
                     baseConsumer.script(src = "/assets/scripts/autoreload.js") {
                         defer = true
                     }
-                    baseConsumer.script(src = "/assets/scripts/shiki.js") {
-                        type = "module"
-                    }
                 }
             }
         }

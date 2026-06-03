@@ -10,7 +10,6 @@ interface ShockyExtension {
 
     val outputDir: DirectoryProperty
     val source: DirectoryProperty
-    val buildDir: DirectoryProperty
     val mainClass: Property<String>
     var classpath: FileCollection?
 
