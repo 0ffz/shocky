@@ -1,6 +1,11 @@
 package me.dvyy.shocky.dev
 
-fun autoReloadScript() = """
+import org.intellij.lang.annotations.Language
+
+fun js(@Language("javascript") text: String): String = text
+
+fun autoReloadScript() = js(
+    """
 let socket;
 let reconnectInterval = 1000; // Initial reconnect interval in ms
 
@@ -32,3 +37,4 @@ function connectWebSocket() {
 // Start the WebSocket connection
 connectWebSocket();
 """.trimIndent()
+)

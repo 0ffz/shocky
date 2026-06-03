@@ -14,6 +14,7 @@ import com.vladsch.flexmark.util.ast.Node
 import com.vladsch.flexmark.util.data.MutableDataSet
 import kotlinx.html.*
 import org.intellij.lang.annotations.Language
+import org.jsoup.Jsoup
 
 infix fun Tag.markdown(@Language("markdown") src: String) {
     val html = src.markdownToHTML()
@@ -46,12 +47,16 @@ object MarkdownGeneration {
 
 
 }
-
 fun String.markdownToHTML(): String {
     // You can re-use parser and renderer instances
     val document: Node = MarkdownGeneration.parser.parse(this)
     val html = MarkdownGeneration.renderer.render(document) // "<p>This is <em>Sparta</em></p>\n"
-    return html.replace("&nbsp;", " ")
+    val cleaned = Jsoup.parseBodyFragment(html).body().html()
+    return html
+}
+
+fun HTMLTag.safeHtml(string: String) {
+    unsafe { +Jsoup.parseBodyFragment(string).body().html() }
 }
 
 infix fun Tag.md(@Language("markdown") src: String) {

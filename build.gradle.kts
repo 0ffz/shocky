@@ -1,6 +1,6 @@
 plugins {
-    kotlin("jvm") version "2.2.0"
-    kotlin("plugin.serialization") version "2.2.0"
+    alias(miaLibs.plugins.mia.kotlin.jvm)
+    alias(miaLibs.plugins.kotlinx.serialization)
     `maven-publish`
 }
 
@@ -11,20 +11,25 @@ repositories {
 }
 
 dependencies {
-    api("org.jetbrains.kotlinx:kotlinx-html-jvm:0.12.0")
-    api("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
-    api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
-    api("com.charleskorn.kaml:kaml:0.78.0")
-
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines:0.19.2")
-    implementation("io.ktor:ktor-server-core:3.1.3")
-    implementation("io.ktor:ktor-server-cio:3.1.3")
-    implementation("io.ktor:ktor-server-websockets:3.1.3")
-    implementation("io.ktor:ktor-server-html-builder:3.1.3")
-    implementation("ch.qos.logback:logback-classic:1.5.13")
-    implementation("io.methvin:directory-watcher:0.18.0")
-    implementation("com.vladsch.flexmark:flexmark-all:0.64.8")
-    implementation("co.touchlab:kermit:2.0.4")
+    api(libs.kotlinx.html)
+    api(libs.kotlinx.datetime)
+    api(libs.kotlinx.serialization.json)
+    api(libs.directory.watcher)
+    api(miaLibs.kotlinx.serialization.kaml)
+    implementation(miaLibs.kotlinx.coroutines.core)
+    implementation(libs.ktor.server.core)
+    implementation(libs.ktor.server.cio)
+    implementation(libs.ktor.server.websockets)
+    implementation(libs.ktor.server.html.builder)
+    implementation(libs.flexmark)
+    implementation(miaLibs.logback.classic)
+    implementation(miaLibs.kermit)
+    implementation(miaLibs.console.clikt)
+    val graalVersion = "25.0.3" // Use the latest stable version
+    implementation("org.graalvm.polyglot:polyglot:$graalVersion")
+    implementation("org.graalvm.polyglot:js:$graalVersion")
+    implementation("org.graalvm.polyglot:wasm:$graalVersion")
+    implementation("org.jsoup:jsoup:1.22.2")
 }
 
 kotlin {

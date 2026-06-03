@@ -10,8 +10,8 @@ import java.nio.file.Path
 data class PageReference(
     val url: String,
     val outputFile: Path,
-    val inputFile: Path,
-    val templateSelector: Page.() -> Unit,
+//    val inputFile: Path,
+//    val templateSelector: Page.() -> Unit,
 ) {
 }
 

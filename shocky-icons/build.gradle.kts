@@ -2,7 +2,7 @@ import java.net.URI
 import java.util.zip.ZipInputStream
 
 plugins {
-    kotlin("jvm") version "2.2.0"
+    alias(miaLibs.plugins.mia.kotlin.jvm)
     `maven-publish`
 }
 
