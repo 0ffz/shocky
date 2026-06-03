@@ -1,5 +1,6 @@
 plugins {
     alias(miaLibs.plugins.mia.kotlin.jvm)
+    alias(miaLibs.plugins.mia.publication)
     alias(miaLibs.plugins.kotlinx.serialization)
     `maven-publish`
 }
@@ -47,23 +48,5 @@ java {
 sourceSets {
     main {
         kotlin.srcDirs("src")
-    }
-}
-
-publishing {
-    repositories {
-        maven {
-            name = "mineinabyssMaven"
-            val repo = "https://repo.mineinabyss.com/"
-            val isSnapshot = System.getenv("IS_SNAPSHOT") == "true"
-            val url = if (isSnapshot) repo + "snapshots" else repo + "releases"
-            setUrl(url)
-            credentials(PasswordCredentials::class)
-        }
-    }
-    publications {
-        create<MavenPublication>("java") {
-            from(components["java"])
-        }
     }
 }

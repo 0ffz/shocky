@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm")
+    alias(miaLibs.plugins.mia.publication)
     `java-gradle-plugin`
     `maven-publish`
 }
@@ -16,7 +17,7 @@ dependencies {
 
 gradlePlugin {
     plugins {
-        create("tailwind") {
+        create("shocky") {
             id = "me.dvyy.shocky.generator"
             implementationClass = "me.dvyy.shocky.ShockyPlugin"
         }

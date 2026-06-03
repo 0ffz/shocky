@@ -3,9 +3,7 @@ package me.dvyy.shocky
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.FileCollection
-import org.gradle.api.file.ProjectLayout
 import org.gradle.api.file.RegularFileProperty
-import org.gradle.api.internal.file.FileOperations
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.*
@@ -48,12 +46,6 @@ abstract class AbstractShockyTask @Inject constructor(
     @get:OutputDirectory
     abstract val buildDir: DirectoryProperty
 
-    @get:Inject
-    abstract val layout: ProjectLayout
-
-    @get:Inject
-    abstract val fileOperations: FileOperations
-
     @get:InputDirectory
     abstract val source: DirectoryProperty
 
@@ -81,7 +73,7 @@ abstract class AbstractShockyTask @Inject constructor(
             it.mainClass.set(mainClass)
             it.args = listOf(
                 if (isServe) "serve" else "generate",
-                "--dev-mode=true",
+                "--dev-mode=${if (isServe) "true" else "false"}",
                 "--gradle-task=${generateTaskName.get()}",
                 "--dest=${buildDir}",
                 "--source=${sourceDir}"
